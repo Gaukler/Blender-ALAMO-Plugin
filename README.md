@@ -97,4 +97,7 @@ The exporter supports packing a custom vertex property into the third component 
 This can be used to store additional data. However this has to be decoded in the shader.  
 To enable this functionality add the shader name to the 'pack_vertex_color' list.
 
+# References 
 
+[Breakdown](https://modtools.petrolution.net/docs/AlaFileFormat) of the Alamo Object File Format.  
+[Breakdown](https://modtools.petrolution.net/docs/AloFileFormat) of the Alamo Animation File Format.
