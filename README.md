@@ -93,9 +93,6 @@ Every shader also needs a vertex format. This tells the engine what vertex data 
 This is implemented with a second dictionary called 'vertex_format_dict', with the key being the shader name and the item the formats name as a string.  
 
 If a shader uses normal mapping its name has to be added to the 'bumpMappingList' list.  
-The exporter supports packing a custom vertex property into the third component of the normal, tangent and bitangent. 
-This can be used to store additional data. However this has to be decoded in the shader.  
-To enable this functionality add the shader name to the 'pack_vertex_color' list.
 
 # References 
 

@@ -675,16 +675,10 @@ class ALO_Exporter(bpy.types.Operator):
                 file.write(utils.pack_float(vertex.co[2]))
 
                 #normal
-                if(shader in settings.pack_vertex_color):
-                    normal = vertex.normal.normalized()
-                    file.write(utils.pack_float(normal[0]))
-                    file.write(utils.pack_float(normal[1]))
-                    file.write(utils.pack_float(vertex.color[0]))
-                else:
-                    normal = vertex.normal.normalized()
-                    file.write(utils.pack_float(normal[0]))
-                    file.write(utils.pack_float(normal[1]))
-                    file.write(utils.pack_float(normal[2]))
+                normal = vertex.normal.normalized()
+                file.write(utils.pack_float(normal[0]))
+                file.write(utils.pack_float(normal[1]))
+                file.write(utils.pack_float(normal[2]))
 
 
                 #UVs
@@ -703,23 +697,13 @@ class ALO_Exporter(bpy.types.Operator):
                 tangent.normalize()
                 bitangent.normalize()
 
-                if(shader in settings.pack_vertex_color):
-                    file.write(utils.pack_float(tangent.x))
-                    file.write(utils.pack_float(tangent.y))
-                    file.write(utils.pack_float(vertex.color[1]))
-                else:
-                    file.write(utils.pack_float(tangent.x))
-                    file.write(utils.pack_float(tangent.y))
-                    file.write(utils.pack_float(tangent.z))
+                file.write(utils.pack_float(tangent.x))
+                file.write(utils.pack_float(tangent.y))
+                file.write(utils.pack_float(tangent.z))
 
-                if(shader in settings.pack_vertex_color):
-                    file.write(utils.pack_float(bitangent.x))
-                    file.write(utils.pack_float(bitangent.y))
-                    file.write(utils.pack_float(vertex.color[2]))
-                else:
-                    file.write(utils.pack_float(bitangent.x))
-                    file.write(utils.pack_float(bitangent.y))
-                    file.write(utils.pack_float(bitangent.z))
+                file.write(utils.pack_float(bitangent.x))
+                file.write(utils.pack_float(bitangent.y))
+                file.write(utils.pack_float(bitangent.z))
 
                 #color
                 file.write(utils.pack_float(1))

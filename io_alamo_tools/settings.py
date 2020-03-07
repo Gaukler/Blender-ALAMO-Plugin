@@ -79,6 +79,4 @@ bumpMappingList = ['MeshBumpColorize.fx', 'MeshBumpColorizeVertex.fx', 'MeshBump
 
 rotation_curve_name = ['].rotation_quaternion', '].rotation_euler']
 
-pack_vertex_color = ["MeshBumpColorizeVertex.fx"]
-
 #no_UV_Shaders = {"alDefault.fx", "MeshCollision.fx", "MeshShadowVolume.fx", "RSkinShadowVolume.fx"}
