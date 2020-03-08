@@ -2,4 +2,3 @@
 !.gitignore 
 !*/
 !io_alamo_tools/*
-io_alamo_tools/__init__.py
