@@ -99,6 +99,7 @@ class ALO_Importer(bpy.types.Operator):
         def removeShadowDoubles():
             for object in bpy.data.objects:
                 if(object.type == 'MESH'):
+                    if(len(object.material_slots) <= 0): continue; #already existing objects might not have a material
                     shader = object.material_slots[0].material.shaderList.shaderList
                     if (shader == 'MeshCollision.fx' or shader == 'RSkinShadowVolume.fx' or shader == 'MeshShadowVolume.fx'):
                         bpy.ops.object.select_all(action='DESELECT')
