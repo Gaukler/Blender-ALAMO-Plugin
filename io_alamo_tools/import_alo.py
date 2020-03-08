@@ -265,8 +265,9 @@ class ALO_Importer(bpy.types.Operator):
 
             # create UVs
             createUVLayer("MainUV", UVs)
-
             assign_vertex_groups(animationMapping, currentMesh)
+
+            return mesh
 
         def readMeshInfo(currentMesh):
             file.seek(8, 1)  # skip size and header
@@ -326,8 +327,8 @@ class ALO_Importer(bpy.types.Operator):
                 faceOffset += currentSubMesh.nVertices
                 counter += 1
 
-            construct_mesh(currentMesh)
-            name = currentMesh.name
+            contructed_mesh = construct_mesh(currentMesh)
+            name = contructed_mesh.name
             return name
 
         def read_mesh_data(currentSubMesh):
