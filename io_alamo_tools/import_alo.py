@@ -24,6 +24,17 @@ import os
 from os import listdir
 import bmesh
 
+def boneEnumCallback(scene, context):
+    bones = [('None', 'None', '', '', 0)]
+    counter = 1
+    armature = utils.findArmature()
+    if(armature != None):
+        for bone in armature.data.bones:
+            bones.append((bone.name, bone.name, '', '', counter))
+            counter += 1
+    bones.sort(key=lambda tup : tup[0])
+    return bones
+
 class ALO_Importer(bpy.types.Operator):
     """ALO Importer"""      # blender will use this as a tooltip for menu items and buttons.
     bl_idname = "import.alo"        # unique identifier for buttons and menu items to reference.
@@ -36,6 +47,12 @@ class ALO_Importer(bpy.types.Operator):
         "category": "Import",
     }
 
+    parentName : EnumProperty(
+        name='Attachment Bone',
+        description = "Bone that imported models are attached to",
+        items = boneEnumCallback
+    )
+
     importAnimations : BoolProperty(
             name="Import Animations",
             description="Import the model's animations from the same path",
@@ -46,6 +63,7 @@ class ALO_Importer(bpy.types.Operator):
         layout = self.layout
 
         layout.prop(self, "importAnimations")
+        layout.prop(self, "parentName")
 
     filepath : StringProperty(name="File Path", description="Filepath used for importing the ALO file", maxlen=1024, default="")
 
@@ -863,6 +881,12 @@ class ALO_Importer(bpy.types.Operator):
         global meshList
         meshList = []
 
+        #is changed due to implementation details in the enum callback
+        activeArmatureBackup = 'None'
+        originalArmature = utils.findArmature()
+        if(originalArmature != None):
+            activeArmatureBackup = originalArmature.name
+
         global file
         filepath = self.properties.filepath
         file = open(filepath, 'rb') #open file in read binary mode
@@ -873,6 +897,19 @@ class ALO_Importer(bpy.types.Operator):
         deleteRoot()
         if(self.importAnimations):
             loadAnimations(filepath)
+
+        #restore previous active armature
+        if(activeArmatureBackup != 'None'):
+            createdArmature = utils.findArmature() #get new armature
+            bpy.context.scene.ActiveSkeleton.skeletonEnum = activeArmatureBackup #restore
+            armature = utils.findArmature()
+            #set parent
+            if(self.parentName != 'None' and armature != None):
+                parentBone = armature.data.bones[self.parentName]
+                if(parentBone != None):
+                    createdArmature.parent = armature
+                    createdArmature.parent_bone = self.parentName
+                    createdArmature.parent_type = 'BONE'
 
         return {'FINISHED'}            # this lets blender know the operator finished successfully.
 
