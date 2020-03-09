@@ -21,6 +21,15 @@ When exporting or importing it's a good idea to open the Blender [console](https
 Warnings and errors are displayed here.   
 Common issues when exporting include missing UVs or vertex weights when using shaders that need them and not assigning a material.  
 
+## Transform
+
+Every object should remain without an object level transformation, so the origin should remain at the center without rotation
+and scaling.  
+Object transforms will be ignored when exporting. To move an object to a specific location it has to be attached to a bone.  
+This is done by using a [child of constraint](https://docs.blender.org/manual/en/latest/animation/constraints/relationship/child_of.html).  
+To automate the process the 'Create Constraint Bone' button can be used. An active armature has to be selected and the selected 
+object must not have a child of constraint. This will create a new bone in the active skeleton at using the transform of the object. The object will be constrained to the bone and the transform will be reset. As a result the object should remain at the same position and rotation. 
+
 ## Shadow meshes
 
 Shadow meshes are used ingame to render shadows using [shadow volumes](https://en.wikipedia.org/wiki/Shadow_volume).  
