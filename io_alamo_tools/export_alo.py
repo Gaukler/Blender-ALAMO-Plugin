@@ -298,8 +298,6 @@ class ALO_Exporter(bpy.types.Operator):
                 self.bitangent  = mathutils.Vector((0, 0, 0))
                 self.bone_index = 0
                 self.face_index = 0
-                self.test_vert_index = 0
-                self.test_loop_index = 0
 
         #list of script-added modifiers on current object
         #used to clean up if runtime error is raised
@@ -471,9 +469,6 @@ class ALO_Exporter(bpy.types.Operator):
 
                     if store_vertex:
                         vertex = vertexData()
-                        vertex.test_vert_index = vert.index
-                        vertex.test_loop_index = loop.index
-
                         vertex.co = vert.co
 
                         if face.smooth:
