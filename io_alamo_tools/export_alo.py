@@ -296,9 +296,10 @@ class ALO_Exporter(bpy.types.Operator):
                 self.normal = mathutils.Vector((0, 0, 0))
                 self.tangent = mathutils.Vector((0, 0, 0))
                 self.bitangent  = mathutils.Vector((0, 0, 0))
-                self.color = mathutils.Vector((1, 1, 1))
                 self.bone_index = 0
                 self.face_index = 0
+                self.test_vert_index = 0
+                self.test_loop_index = 0
 
         #list of script-added modifiers on current object
         #used to clean up if runtime error is raised
@@ -448,34 +449,31 @@ class ALO_Exporter(bpy.types.Operator):
             mesh.calc_tangents()
 
             uv_layer = mesh.uv_layers.active.data
-
-            color_lay = bm.loops.layers.color.active
-            blender_to_alo_index = {}   #dictionary that maps blender vertex indices to the corresponding alo index
+            loop_to_alo_index = {}   #dictionary that maps blender vertex indices to the corresponding alo index
                                         #only smooth shaded faces are saved here, as flat shaded faces need duplicate vertices anyway
 
             alo_index = 0
             for face in faces:
-                for loop in face.loops: #loops are vertices per UV
+                for loop in face.loops:
 
                     vert = loop.vert
                     store_vertex = True
 
                     if face.smooth:
-                        #check if neighbouring faces use same vertex
-                        for edge in face.edges:
-                            for adjacent_face in edge.link_faces:
-                                if adjacent_face.index != face.index:   #don't compare face with itself
-                                    for adjacent_face_loop in adjacent_face.loops:
-                                        adjacent_face_vertex = adjacent_face_loop.vert
-                                        if adjacent_face_vertex.index == vert.index and uv_layer[loop.index].uv == uv_layer[adjacent_face_loop.index].uv:
-                                            #don't save duplicate if same vertex and same UV coordinates are used
-                                            if vert.index in blender_to_alo_index and store_vertex: #require store_vertex so that inner statement can only be executed once, TO-DO: optimize
-                                                if uv_layer[loop.index].uv == vertices[blender_to_alo_index[vert.index]].uv:
-                                                    face_indices.append(blender_to_alo_index[vert.index])
-                                                    store_vertex = False
+                        for adjacent_loop in vert.link_loops:
+                            if adjacent_loop != loop and uv_layer[loop.index].uv == uv_layer[adjacent_loop.index].uv:
+                                #don't save duplicate if same vertex and same UV coordinates are used
+                                if adjacent_loop.index in loop_to_alo_index:
+                                    face_indices.append(loop_to_alo_index[adjacent_loop.index])
+                                    store_vertex = False
+                                    break
+
 
                     if store_vertex:
                         vertex = vertexData()
+                        vertex.test_vert_index = vert.index
+                        vertex.test_loop_index = loop.index
+
                         vertex.co = vert.co
 
                         if face.smooth:
@@ -484,9 +482,6 @@ class ALO_Exporter(bpy.types.Operator):
                             vertex.normal = face.normal
 
                         vertex.uv =  uv_layer[loop.index].uv
-
-                        if color_lay != None:
-                            vertex.color = loop[color_lay]
 
                         meshVertex = mesh.vertices[vert.index]
                         vertex.bone_index = getMaxWeightGroupIndex(meshVertex)
@@ -497,7 +492,7 @@ class ALO_Exporter(bpy.types.Operator):
                         face_indices.append(alo_index)
 
                         if face.smooth:
-                            blender_to_alo_index[vert.index] = alo_index
+                            loop_to_alo_index[loop.index] = alo_index
 
                         vertex.face_index = face.index
 
