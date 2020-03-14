@@ -563,11 +563,18 @@ class ALO_Importer(bpy.types.Operator):
             obj = bpy.context.object
             mat = bpy.data.materials.new(obj.name + "Material")
 
-            if not(shaderName in settings.material_parameter_dict):
-                print("Warning: unknown shader: " + shaderName + " setting shader to alDefault.fx")
-                shaderName = "alDefault.fx"
+            #find shader, ignoring case
+            currentKey = None
+            for key in settings.material_parameter_dict:
+                if(key.lower() == shaderName.lower()):
+                    currentKey = key
+                    break
 
-            mat.shaderList.shaderList = shaderName
+            if currentKey == None:
+                print("Warning: unknown shader: " + shaderName + " setting shader to alDefault.fx")
+                currentKey = "alDefault.fx"
+
+            mat.shaderList.shaderList = currentKey
 
             obj.data.materials.append(mat)
             currentSubMesh.material = mat
