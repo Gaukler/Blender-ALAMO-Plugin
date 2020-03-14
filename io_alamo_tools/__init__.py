@@ -171,38 +171,16 @@ class ALAMO_PT_materialPropertyPanel(bpy.types.Panel):
                             else:
                                 c.prop(material, property)
 
+def createShaderModeOptions():
+    mode_options = []
+
+    for index, shader_name in enumerate(settings.material_parameter_dict):
+        mode_options.append((shader_name, shader_name, '', '', index))
+
+    return mode_options
+
 class shaderListProperties(bpy.types.PropertyGroup):
-    mode_options = [
-        ("alDefault.fx",  "alDefault.fx", '', '', 1),
-        ("BatchMeshAlpha.fx", "BatchMeshAlpha.fx", '', '', 2),
-        ("BatchMeshGloss.fx", "BatchMeshGloss.fx", '', '', 3),
-        ("Grass.fx", "Grass.fx", '', '', 4),
-        ("MeshAdditive.fx", "MeshAdditive.fx", '', '', 5),
-        ("MeshAlpha.fx", "MeshAlpha.fx", '', '', 6),
-        ("MeshAlphaScroll.fx", "MeshAlphaScroll.fx", '', '', 7),
-        ("MeshBumpColorize.fx", "MeshBumpColorize.fx", '', '', 8),
-        ("MeshBumpColorizeVertex.fx", "MeshBumpColorizeVertex.fx", '', '', 28),
-        ("MeshBumpColorizeDetail.fx", "MeshBumpColorizeDetail.fx", '', '', 29),
-        ("MeshBumpLight.fx", "MeshBumpLight.fx", '', '', 26),
-        ("MeshCollision.fx", "MeshCollision.fx", '', '', 9),
-        ("MeshGloss.fx", "MeshGloss.fx", '', '', 10),
-        ("MeshGlossColorize.fx", "MeshGlossColorize.fx", '', '', 11),
-        ("MeshShadowVolume.fx", "MeshShadowVolume.fx", '', '', 12),
-        ("MeshShield.fx", "MeshShield.fx", '', '', 13),
-        ("Nebula.fx", "Nebula.fx", '', '', 14),
-        ("Planet.fx", "Planet.fx", '', '', 15),
-        ("RSkinAdditive.fx", "RSkinAdditive.fx", '', '', 16),
-        ("RSkinAlpha.fx", "RSkinAlpha.fx", '', '', 17),
-        ("RSkinBumpColorize.fx", "RSkinBumpColorize.fx", '', '', 18),
-        ("RSkinGloss.fx", "RSkinGloss.fx", '', '', 19),
-        ("RSkinGlossColorize.fx", "RSkinGlossColorize.fx", '', '', 20),
-        ("RSkinShadowVolume.fx", "RSkinShadowVolume.fx", '', '', 21),
-        ("Skydome.fx", "Skydome.fx", '', '', 22),
-        ("TerrainMeshBump.fx", "TerrainMeshBump.fx", '', '', 23),
-        ("TerrainMeshGloss.fx", "TerrainMeshGloss.fx", '', '', 24),
-        ("Tree.fx", "Tree.fx", '', '', 25),
-        ("LightProxy.fx", "LightProxy.fx", '', '', 27)
-    ]
+    mode_options = createShaderModeOptions()
 
     shaderList : bpy.props.EnumProperty(
         items=mode_options,
