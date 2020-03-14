@@ -130,19 +130,26 @@ class ALO_Importer(bpy.types.Operator):
                         bpy.ops.object.mode_set(mode='OBJECT')
 
         def createArmature():
-            bpy.ops.object.add(type='ARMATURE', enter_editmode=True, )
+
+            global fileName
+
+            #create armature
+            armatureBlender = bpy.data.armatures.new(fileName + "Armature")
+
+            #create object
+            armatureObj = bpy.data.objects.new(fileName + "Rig", object_data=armatureBlender)
+
+            # Link object to collection
+            importCollection.objects.link(armatureObj)
+            bpy.context.view_layer.objects.active = armatureObj
+            bpy.context.view_layer.update()
+
+            #adjust settings and enter edit-mode
             armatureObj = bpy.context.object
             armatureObj.show_in_front = True
+            utils.setModeToEdit()
 
-            name = file.name.split("\\")
-            name = name[len(name) - 1]
-            name = name[:len(name) - 4]
-            armatureObj.name = name + "Rig"
-
-            armatureBlender = armatureObj.data
-            armatureBlender.name = name + 'Armature'
             armatureBlender.display_type = 'STICK'
-
             armatureData = Armature()
 
             file.seek(4, 1)  # skip size
@@ -471,12 +478,10 @@ class ALO_Importer(bpy.types.Operator):
             global MeshNameList
             MeshNameList.append(object.name)
 
-            # Link object to scene
-            scn = bpy.context.scene
-            scn.collection.objects.link(object)
+            # Link object to collection
+            importCollection.objects.link(object)
             bpy.context.view_layer.objects.active = object
-            layer = bpy.context.view_layer
-            layer.update()
+            bpy.context.view_layer.update()
 
             context.view_layer.objects.active = object  # make created object active
             object.show_transparent = True
@@ -887,6 +892,15 @@ class ALO_Importer(bpy.types.Operator):
 
         global meshList
         meshList = []
+
+        global fileName
+        fileName = self.properties.filepath.split("\\")
+        fileName = fileName[len(fileName) - 1]
+        fileName = fileName[:len(fileName) - 4]
+
+        global importCollection
+        importCollection = bpy.data.collections.new(fileName)
+        bpy.context.scene.collection.children.link(importCollection)
 
         #is changed due to implementation details in the enum callback
         activeArmatureBackup = 'None'
