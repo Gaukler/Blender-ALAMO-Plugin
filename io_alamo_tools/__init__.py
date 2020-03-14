@@ -78,7 +78,7 @@ class skeletonEnumClass(PropertyGroup):
         items = skeletonEnumCallback
     )
 
-class ALAMOToolsPanel(bpy.types.Panel):
+class ALAMO_PT_ToolsPanel(bpy.types.Panel):
 
     bl_label = "ALAMO properties"
     bl_space_type = 'VIEW_3D'
@@ -128,7 +128,7 @@ class ALAMOToolsPanel(bpy.types.Panel):
                 poseBone = object.pose.bones[bone.name]
                 c.prop(poseBone, "proxyIsHiddenAnimation")
 
-class materialPropertyPanel(bpy.types.Panel):
+class ALAMO_PT_materialPropertyPanel(bpy.types.Panel):
     bl_label = "Alamo material properties"
     bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
@@ -254,9 +254,9 @@ classes = (
     ALA_Importer,
     ALO_Exporter,
     ALA_Exporter,
-    materialPropertyPanel,
+    ALAMO_PT_materialPropertyPanel,
     createConstraintBoneButton,
-    ALAMOToolsPanel
+    ALAMO_PT_ToolsPanel
 )
 
 def register():
