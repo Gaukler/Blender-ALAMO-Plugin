@@ -503,31 +503,35 @@ class ALO_Exporter(bpy.types.Operator):
 
             # list of all faces using the current material
             per_face_vertex_id = {}
-
             vertices = []
             face_indices = []
-
+            vertex_index_map = {}
             alo_index = 0
+            
             for face in bm.faces:
                 indexArray = {}
+                
                 for vert in face.verts:
                     vertex = vertexData()
+                    
                     vertex.co = vert.co
                     vertex.normal = face.normal
+                    key = (vert.index, face.normal.x, face.normal.y, face.normal.z)
+                    if key in vertex_index_map:
+                        indexArray[vert.index] = vertex_index_map[key]
+                        face_indices.append(vertex_index_map[key])
+                    else:
+                        vertex_index_map[key] = alo_index            
+                        vertex.uv =  mathutils.Vector((0, 0))
+                        meshVertex = mesh.vertices[vert.index]
+                        vertex.bone_index = getMaxWeightGroupIndex(meshVertex)
+                        if(vertex.bone_index == None):
+                            vertex.bone_index = 0
+                        vertices.append(vertex)
+                        face_indices.append(alo_index)
+                        indexArray[vert.index] = alo_index
+                        alo_index += 1
 
-                    vertex.uv =  mathutils.Vector((0, 0))
-
-                    meshVertex = mesh.vertices[vert.index]
-                    vertex.bone_index = getMaxWeightGroupIndex(meshVertex)
-                    if(vertex.bone_index == None):
-                        vertex.bone_index = 0
-
-
-                    vertices.append(vertex)
-                    face_indices.append(alo_index)
-
-                    indexArray[vert.index] = alo_index
-                    alo_index += 1
                 per_face_vertex_id[face.index] = indexArray
 
 
