@@ -6,6 +6,7 @@ material_parameter_dict = {
     "BatchMeshGloss.fx": ["Emissive", "Diffuse", "Specular", "Shininess", "BaseTexture"],
     "Grass.fx": ["Emissive", "Diffuse", "Diffuse1", "BendScale", "BaseTexture"],
     "MeshAdditive.fx": ["BaseTexture", "UVScrollRate", "Color"],
+    "MeshAdditiveOffset.fx": ["BaseTexture", "UVOffset", "Color"],
     "MeshAlpha.fx": ["Emissive", "Diffuse", "Specular", "Shininess", "BaseTexture"],
     "MeshAlphaScroll.fx": ["Emissive", "Diffuse", "Specular", "Shininess", "BaseTexture"],
     "MeshBumpColorize.fx": ["Emissive", "Diffuse", "Specular", "Shininess", "Colorization", "UVOffset",
