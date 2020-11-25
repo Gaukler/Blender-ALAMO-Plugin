@@ -48,6 +48,7 @@ vertex_format_dict = {
     "BatchMeshGloss.fx"     : "alD3dVertNU2",
     "Grass.fx"              : "alD3dVertGrass",
     "MeshAdditive.fx"       : "alD3dVertNU2",
+    "MeshAdditiveOffset.fx" : "alD3dVertNU2",
     "MeshAlpha.fx"          : "alD3dVertNU2",
     "MeshAlphaScroll.fx"    : "alD3dVertNU2",
     "MeshBumpColorize.fx"   : "alD3dVertNU2U3U3",
