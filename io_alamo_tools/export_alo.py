@@ -449,6 +449,7 @@ class ALO_Exporter(bpy.types.Operator):
             uv_layer = mesh.uv_layers.active.data
             loop_to_alo_index = {}   #dictionary that maps blender vertex indices to the corresponding alo index
                                         #only smooth shaded faces are saved here, as flat shaded faces need duplicate vertices anyway
+            vertex_index_map = {}
 
             alo_index = 0
             for face in faces:
@@ -457,6 +458,8 @@ class ALO_Exporter(bpy.types.Operator):
                     vert = loop.vert
                     store_vertex = True
 
+                    key = (vert.index, face.normal.x, face.normal.y, face.normal.z, uv_layer[loop.index].uv.x, uv_layer[loop.index].uv.y)
+                    
                     if face.smooth:
                         for adjacent_loop in vert.link_loops:
                             if adjacent_loop != loop and uv_layer[loop.index].uv == uv_layer[adjacent_loop.index].uv:
@@ -465,7 +468,9 @@ class ALO_Exporter(bpy.types.Operator):
                                     face_indices.append(loop_to_alo_index[adjacent_loop.index])
                                     store_vertex = False
                                     break
-
+                    elif key in vertex_index_map:
+                        face_indices.append(vertex_index_map[key])
+                        store_vertex = False
 
                     if store_vertex:
                         vertex = vertexData()
@@ -488,6 +493,8 @@ class ALO_Exporter(bpy.types.Operator):
 
                         if face.smooth:
                             loop_to_alo_index[loop.index] = alo_index
+                        else:
+                            vertex_index_map[key] = alo_index     
 
                         vertex.face_index = face.index
 
