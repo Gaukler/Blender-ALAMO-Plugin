@@ -281,7 +281,7 @@ def create_animation(data):
     scene = bpy.context.scene
     scene.frame_start = 0
     scene.frame_end = data.num_frames-1
-    scene.render.fps = data.fps
+    scene.render.fps = int(data.fps)
     scene.frame_set(0)
 
     utils.setModeToObject()

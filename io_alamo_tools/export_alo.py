@@ -45,10 +45,14 @@ class ALO_Exporter(bpy.types.Operator):
             description="Export all animation actions as .ALA files, into the same directory",
             default=True,
             )
-
     exportHiddenObjects : BoolProperty(
             name="Export Hidden Objects",
             description="Export all objects, regardless of if they are hidden",
+            default=False,
+            )
+    checkshadowObjects : BoolProperty(
+            name="Check Shadow Objects",
+            description="Export all shadows, regardless of if they have non-manifold",
             default=True,
             )
 
@@ -57,6 +61,7 @@ class ALO_Exporter(bpy.types.Operator):
 
         layout.prop(self, "exportAnimations")
         layout.prop(self, "exportHiddenObjects")
+        layout.prop(self, "checkshadowObjects")
 
     def execute(self, context):  # execute() is called by blender when running the operator.
 
@@ -510,17 +515,17 @@ class ALO_Exporter(bpy.types.Operator):
 
             # list of all faces using the current material
             per_face_vertex_id = {}
+
             vertices = []
             face_indices = []
-            vertex_index_map = {}
-            alo_index = 0
             
+            vertex_index_map = {}
+            
+            alo_index = 0
             for face in bm.faces:
                 indexArray = {}
-                
                 for vert in face.verts:
                     vertex = vertexData()
-                    
                     vertex.co = vert.co
                     vertex.normal = face.normal
                     key = (vert.index, face.normal.x, face.normal.y, face.normal.z)
@@ -538,9 +543,7 @@ class ALO_Exporter(bpy.types.Operator):
                         face_indices.append(alo_index)
                         indexArray[vert.index] = alo_index
                         alo_index += 1
-
                 per_face_vertex_id[face.index] = indexArray
-
 
             for edge in bm.edges:
                 face1 = edge.link_faces[0]
@@ -598,6 +601,7 @@ class ALO_Exporter(bpy.types.Operator):
 
         def create_sub_mesh_data_chunk(mesh, material, object, bone_name_per_alo_index):
 
+            print(mesh.name)
             sub_mesh_data_header = b"\x00\x00\x01\00"
             sub_mesh_data_header += utils.pack_int(0)
             file.write(sub_mesh_data_header)
@@ -816,6 +820,8 @@ class ALO_Exporter(bpy.types.Operator):
                     chunk += mat_tex_chunk("WaveTexture", material.WaveTexture)
                 elif (parameter == "DistortionTexture"):
                     chunk += mat_tex_chunk("DistortionTexture", material.DistortionTexture)
+                elif (parameter == "SpecularTexture"):
+                    chunk += mat_tex_chunk("SpecularTexture", material.SpecularTexture)
                 elif (parameter == "UVScrollRate"):
                     chunk += mat_float4_chunk("UVScrollRate", material.UVScrollRate)
                 elif (parameter == "DistortionScale"):
@@ -1459,7 +1465,9 @@ class ALO_Exporter(bpy.types.Operator):
         mesh_list = create_export_list(bpy.context.scene.collection)
 
         #check if export objects satisfy requirements (has material, UVs, ...)
-        checkShadowMesh(mesh_list)
+        
+        if(self.checkshadowObjects):
+            checkShadowMesh(mesh_list)
         checkUV(mesh_list)
         checkFaceNumber(mesh_list)
         checkAutosmooth(mesh_list)
@@ -1473,6 +1481,7 @@ class ALO_Exporter(bpy.types.Operator):
         path = self.properties.filepath
 
         global file
+
         file = open(path, 'wb')  # open file in read binary mode
 
         bone_name_per_alo_index = create_skeleton()

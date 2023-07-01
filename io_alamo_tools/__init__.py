@@ -168,6 +168,8 @@ class ALAMO_PT_materialPropertyPanel(bpy.types.Panel):
                                 layout.prop_search(material, "WaveTexture", bpy.data, "images")
                             elif property == 'DistortionTexture':
                                 layout.prop_search(material, "DistortionTexture", bpy.data, "images")
+                            elif property == 'SpecularTexture':
+                                layout.prop_search(material, "SpecularTexture", bpy.data, "images")
                             else:
                                 c.prop(material, property)
 
@@ -267,6 +269,7 @@ def register():
     bpy.types.Material.NormalDetailTexture = bpy.props.StringProperty(default='None')
     bpy.types.Material.NormalTexture = bpy.props.StringProperty(default='None')
     bpy.types.Material.GlossTexture = bpy.props.StringProperty(default='None')
+    bpy.types.Material.SpecularTexture = bpy.props.StringProperty(default='None')
     bpy.types.Material.WaveTexture = bpy.props.StringProperty(default='None')
     bpy.types.Material.DistortionTexture = bpy.props.StringProperty(default='None')
     bpy.types.Material.CloudTexture = bpy.props.StringProperty(default='None')
@@ -340,6 +343,7 @@ def unregister():
     bpy.types.Material.GlossTexture
     bpy.types.Material.WaveTexture
     bpy.types.Material.DistortionTexture
+    bpy.types.Material.SpecularTexture
     bpy.types.Material.CloudTexture
     bpy.types.Material.CloudNormalTexture
 

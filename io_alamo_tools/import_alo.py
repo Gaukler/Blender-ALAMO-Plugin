@@ -428,38 +428,29 @@ class ALO_Importer(bpy.types.Operator):
             bsdf = nodes.new("ShaderNodeBsdfPrincipled")
 
             base_image_node = nodes.new("ShaderNodeTexImage")
+            invert_color_node = nodes.new("ShaderNodeInvert")
             normal_image_node = nodes.new("ShaderNodeTexImage")
 
             normal_map_node = nodes.new("ShaderNodeNormalMap")
             normal_map_node.space = 'TANGENT'
-            normal_map_node.uv_map = 'MainUV'
-
-            uvmap   = nodes.new("ShaderNodeUVMap")
-            uvmap.uv_map = "MainUV"
 
             if material.BaseTexture != 'None':
-
                 links.new(output.inputs['Surface'], bsdf.outputs['BSDF'])
-                links.new(bsdf.inputs['Base Color'],   base_image_node.outputs['Color'])
-                links.new(bsdf.inputs['Alpha'],   base_image_node.outputs['Alpha'])
-                links.new(base_image_node.inputs['Vector'],    uvmap.outputs['UV'])
-
+                links.new(bsdf.inputs['Base Color'], base_image_node.outputs['Color'])
+                links.new(invert_color_node.inputs['Color'], base_image_node.outputs['Alpha'])
+                links.new(bsdf.inputs['Alpha'], invert_color_node.outputs['Color'])
                 if material.BaseTexture in bpy.data.images:
                     diffuse_texture = bpy.data.images[material.BaseTexture]
                     base_image_node.image = diffuse_texture
-
             if material.NormalTexture != 'None':
                 links.new(normal_image_node.outputs['Color'], normal_map_node.inputs['Color'])
                 links.new(normal_map_node.outputs['Normal'], bsdf.inputs['Normal'])
-                links.new(normal_image_node.inputs['Vector'],    uvmap.outputs['UV'])
-
                 if material.NormalTexture in bpy.data.images:
                     normal_texture = bpy.data.images[material.NormalTexture]
                     normal_image_node.image = normal_texture
                     normal_image_node.image.colorspace_settings.name = 'Raw'
-
             # distribute nodes along the x axis
-            for index, node in enumerate((uvmap, base_image_node, bsdf, output)):
+            for index, node in enumerate((base_image_node, bsdf, output)):
                 node.location.x = 200.0 * index
 
             normal_map_node.location = bsdf.location
@@ -556,7 +547,8 @@ class ALO_Importer(bpy.types.Operator):
                 file.seek(1, 1)  # skip string end byte
 
                 load_image(texture_name)
-                exec('material.' + texture_function_name + '= texture_name')
+                if texture_function_name != "SpecularTexture":
+                    exec('material.' + texture_function_name + '= texture_name')
 
         def createUVLayer(layerName, uv_coordinates):
             vert_uvs = uv_coordinates
@@ -801,7 +793,7 @@ class ALO_Importer(bpy.types.Operator):
         def validate_material_prop(name):
             material_props = ["BaseTexture", "NormalTexture", "GlossTexture", "WaveTexture", "DistortionTexture", "CloudTexture", "CloudNormalTexture", "Emissive", "Diffuse", "Specular","Shininess","Colorization" \
                 ,"DebugColor","UVOffset","Color","UVScrollRate","DiffuseColor","EdgeBrightness","BaseUVScale","WaveUVScale","DistortUVScale","BaseUVScrollRate","WaveUVScrollRate","DistortUVScrollRate","BendScale" \
-                , "Diffuse1","CloudScrollRate","CloudScale", "SFreq",  "TFreq", "DistortionScale", "Atmosphere", "CityColor", "AtmospherePower"]
+                , "Diffuse1","CloudScrollRate","CloudScale", "SFreq",  "TFreq", "DistortionScale", "Atmosphere", "CityColor", "AtmospherePower", "SpecularTexture"]
 
             if(name in material_props):
                 return True
