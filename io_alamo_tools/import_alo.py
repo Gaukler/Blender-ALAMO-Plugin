@@ -923,7 +923,9 @@ class ALO_Importer(bpy.types.Operator):
                     createdArmature.parent = armature
                     createdArmature.parent_bone = self.parentName
                     createdArmature.parent_type = 'BONE'
-
+        for object in bpy.data.objects:
+            for constraint in object.constraints:
+                constraint.inverse_matrix = mathutils.Matrix.Identity(4)
         return {'FINISHED'}            # this lets blender know the operator finished successfully.
 
     def invoke(self, context, event):
