@@ -289,7 +289,7 @@ class ALO_Importer(bpy.types.Operator):
                     face.material_index = subMeshCounter
 
             # create UVs
-            createUVLayer("MainUV", UVs)
+            createUVLayer("UVMap", UVs)
             assign_vertex_groups(animationMapping, currentMesh)
 
             return mesh
@@ -714,24 +714,6 @@ class ALO_Importer(bpy.types.Operator):
             file.seek(1, 1)  # skip end byte of name
             return string
 
-        def hideObject(object):
-
-            #set correct area type via context overwrite
-            context_override = bpy.context.copy()
-            area = None
-            for window in bpy.context.window_manager.windows:
-                screen = window.screen
-                for a in screen.areas:
-                    if a.type == 'VIEW_3D':
-                        area = a
-                        break
-
-            context_override['area'] = area
-
-            bpy.ops.object.select_all(context_override, action='DESELECT')
-            object.select_set(True)
-            bpy.ops.object.hide_view_set(context_override)
-
         def hideLODs():
             #hides all but the most detailed LOD in Blender
             for object in bpy.data.objects:
@@ -745,7 +727,7 @@ class ALO_Importer(bpy.types.Operator):
                         #hide smaller LODS
                         counter = 0
                         while(counter < lodCounter-1):
-                            hideObject(bpy.data.objects[object.name[:-1] + str(counter)])
+                            bpy.data.objects[object.name[:-1] + str(counter)].hide_viewport = True
                             counter += 1
 
             #hide object if its a shadow or a collision
@@ -754,13 +736,13 @@ class ALO_Importer(bpy.types.Operator):
                     if len(object.material_slots) != 0:
                         shader = object.material_slots[0].material.shaderList.shaderList
                         if(shader == 'MeshCollision.fx' or shader == 'RSkinShadowVolume.fx' or shader == 'MeshShadowVolume.fx'):
-                            hideObject(object)
+                            object.hide_viewport = True
 
             #hide objects that are set to not visible
             for object in bpy.data.objects:
                 if (object.type == 'MESH'):
                     if object.Hidden == True:
-                        hideObject(object)
+                        object.hide_viewport = True
 
         def deleteRoot():
             armature = utils.findArmature()
