@@ -415,25 +415,16 @@ class ALO_Importer(bpy.types.Operator):
             return animation_mapping
 
         def set_up_textures(material):
-
             material.use_nodes = True
             nt = material.node_tree
             nodes = nt.nodes
             links = nt.links
-
-            #clean up
             while(nodes): nodes.remove(nodes[0])
-
             output  = nodes.new("ShaderNodeOutputMaterial")
             bsdf = nodes.new("ShaderNodeBsdfPrincipled")
-
             base_image_node = nodes.new("ShaderNodeTexImage")
             invert_color_node = nodes.new("ShaderNodeInvert")
             normal_image_node = nodes.new("ShaderNodeTexImage")
-
-            normal_map_node = nodes.new("ShaderNodeNormalMap")
-            normal_map_node.space = 'TANGENT'
-
             if material.BaseTexture != 'None':
                 links.new(output.inputs['Surface'], bsdf.outputs['BSDF'])
                 links.new(bsdf.inputs['Base Color'], base_image_node.outputs['Color'])
@@ -443,24 +434,20 @@ class ALO_Importer(bpy.types.Operator):
                     diffuse_texture = bpy.data.images[material.BaseTexture]
                     base_image_node.image = diffuse_texture
             if material.NormalTexture != 'None':
+                normal_map_node = nodes.new("ShaderNodeNormalMap")
+                normal_map_node.space = 'TANGENT'
                 links.new(normal_image_node.outputs['Color'], normal_map_node.inputs['Color'])
                 links.new(normal_map_node.outputs['Normal'], bsdf.inputs['Normal'])
                 if material.NormalTexture in bpy.data.images:
                     normal_texture = bpy.data.images[material.NormalTexture]
                     normal_image_node.image = normal_texture
-                    normal_image_node.image.colorspace_settings.name = 'Raw'
-            # distribute nodes along the x axis
-            for index, node in enumerate((base_image_node, bsdf, output)):
-                node.location.x = 200.0 * index
-
-            normal_map_node.location = bsdf.location
-            normal_map_node.location.y += 300.0
-
-            output.location.x += 200.0
-            bsdf.location.x += 200.0
-
-            normal_image_node.location = base_image_node.location
-            normal_image_node.location.y += 300.0
+                normal_image_node.location.y = -400
+                normal_map_node.location.x = normal_image_node.location.x + normal_image_node.width + 100
+                normal_map_node.location.y = -400
+            invert_color_node.location.x = base_image_node.location.x + base_image_node.width + 100
+            invert_color_node.location.y = -200
+            bsdf.location.x = invert_color_node.location.x + invert_color_node.width + 100
+            output.location.x = bsdf.location.x + bsdf.width + 100
 
         def create_object(currentMesh):
             global mesh
