@@ -714,7 +714,7 @@ class ALO_Importer(bpy.types.Operator):
                         #hide smaller LODS
                         counter = 0
                         while(counter < lodCounter-1):
-                            bpy.data.objects[object.name[:-1] + str(counter)].hide_viewport = True
+                            bpy.data.objects[object.name[:-1] + str(counter)].hide_set(True)
                             counter += 1
 
             #hide object if its a shadow or a collision
@@ -723,13 +723,13 @@ class ALO_Importer(bpy.types.Operator):
                     if len(object.material_slots) != 0:
                         shader = object.material_slots[0].material.shaderList.shaderList
                         if(shader == 'MeshCollision.fx' or shader == 'RSkinShadowVolume.fx' or shader == 'MeshShadowVolume.fx'):
-                            object.hide_viewport = True
+                            object.hide_set(True)
 
             #hide objects that are set to not visible
             for object in bpy.data.objects:
                 if (object.type == 'MESH'):
                     if object.Hidden == True:
-                        object.hide_viewport = True
+                        object.hide_set(True)
 
         def deleteRoot():
             armature = utils.findArmature()
