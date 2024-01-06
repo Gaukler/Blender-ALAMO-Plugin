@@ -227,7 +227,7 @@ def create_anim_info_chunk(armature):
     chunk += struct.pack("<I", animLength + 1)  # number of animation frames
 
     chunk += b'\x02\x04'  # mini chunk length
-    chunk += struct.pack("<f", bpy.context.scene.render.fps)
+    chunk += struct.pack("<f", 30)
 
     chunk += b'\x03\x04'  # mini chunk length
     chunk += struct.pack("<I", len(
