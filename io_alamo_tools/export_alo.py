@@ -1374,11 +1374,6 @@ class ALO_Exporter(bpy.types.Operator):
                     raise RuntimeError('Face number exceeds uShort max on object: ' + object.name + ' split mesh into multiple objects')
                     return True
 
-        def checkAutosmooth(mesh_list):  #prints a warning if Autosmooth is used
-            for object in mesh_list:
-                if object.data.use_auto_smooth:
-                    print('Warning: ' + object.name + ' uses autosmooth, ingame shading might not match blender, use edgesplit instead')
-
         def checkTranslation(mesh_list): #prints warning when translation is not default
             for object in mesh_list:
                 if object.location != mathutils.Vector((0.0, 0.0, 0.0)) or object.rotation_euler != mathutils.Euler((0.0, 0.0, 0.0), 'XYZ') or object.scale != mathutils.Vector((1.0, 1.0, 1.0)):
@@ -1470,7 +1465,6 @@ class ALO_Exporter(bpy.types.Operator):
             checkShadowMesh(mesh_list)
         checkUV(mesh_list)
         checkFaceNumber(mesh_list)
-        checkAutosmooth(mesh_list)
         checkTranslation(mesh_list)
         checkTranslationArmature()
         checkInvalidArmatureModifier(mesh_list)
